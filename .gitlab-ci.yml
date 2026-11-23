@@ -1,0 +1,28 @@
+# Pipeline : tests unitaires + couverture à chaque push / merge request
+image: python:3.12
+
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+
+cache:
+  paths:
+    - .cache/pip
+
+stages:
+  - test
+
+tests:
+  stage: test
+  before_script:
+    - pip install --quiet hatch coverage
+  script:
+    - hatch test --cover          # lance pytest + affiche le rapport (ligne TOTAL)
+    - coverage xml                # rapport Cobertura pour GitLab
+  # Extrait le pourcentage de la ligne "TOTAL ... 100%" -> alimente le badge
+  coverage: '/^TOTAL.*\s+(\d+(?:\.\d+)?%)$/'
+  artifacts:
+    when: always
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage.xml
