@@ -7,4 +7,4 @@ tests:
     - hatch test --cover
   # Pourcentage de la ligne "TOTAL ... 100%" -> badge de couverture
   coverage: '/^TOTAL.*\s+(\d+%)$/'
-  tags: [fedoradocker]
+  tags: [docker]
