@@ -1,0 +1,28 @@
+# Exercice 5 : déploiement simulé (stable sur tag, non stable sur develop)
+name: deploy
+
+on:
+  push:
+    branches: [develop]
+    tags: ["*"]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Historique complet + tags : nécessaire à hatch-vcs
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install hatch
+      - run: hatch build
+      - name: Deployment on stable servers
+        if: github.ref_type == 'tag'
+        run: echo "my-arithmetic-nylphen deployment on stable servers"
+      - name: Deployment on develop servers
+        if: github.ref == 'refs/heads/develop'
+        run: echo "my-arithmetic-nylphen deployment on develop servers"
+      - run: ls -l dist/
