@@ -1,5 +1,5 @@
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling", "hatch-vcs"]
 build-backend = "hatchling.build"
 
 [project]
@@ -32,7 +32,17 @@ Issues = "https://github.com/NylphenGoat/my-arithmetic-nylphen/issues"
 Source = "https://github.com/NylphenGoat/my-arithmetic-nylphen"
 
 [tool.hatch.version]
-path = "src/my_arithmetic_nylphen/__about__.py"
+source = "vcs"
+
+# Versions façon git-flow : 0.1, 0.1.post1.dev2, ... (pas de suffixe local +g<hash>)
+[tool.hatch.version.raw-options]
+version_scheme = "no-guess-dev"
+local_scheme = "no-local-version"
+fallback_version = "0.0"
+
+# Fichier de version généré à la construction (non versionné)
+[tool.hatch.build.hooks.vcs]
+version-file = "src/my_arithmetic_nylphen/__about__.py"
 
 [tool.hatch.envs.types]
 extra-dependencies = [

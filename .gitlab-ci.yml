@@ -1,10 +1,38 @@
-# Exercice 3 : tests unitaires + couverture (badge) à chaque push
 image: python:3.12
 
-tests:
-  script:
+variables:
+  # Historique complet + tags : nécessaire à hatch-vcs pour calculer la version
+  GIT_DEPTH: 0
+
+default:
+  tags: [docker]
+  before_script:
     - pip install hatch
+
+# Exercice 3 : tests unitaires + couverture (badge) à chaque push
+tests:
+  stage: test
+  script:
     - hatch test --cover
   # Pourcentage de la ligne "TOTAL ... 100%" -> badge de couverture
   coverage: '/^TOTAL.*\s+(\d+%)$/'
-  tags: [docker]
+
+# Exercice 4 : déploiement simulé d'une version stable à chaque tag
+deploy-stable:
+  stage: deploy
+  rules:
+    - if: $CI_COMMIT_TAG
+  script:
+    - hatch build
+    - echo "my-arithmetic-nylphen deployment on stable servers"
+    - ls -l dist/
+
+# Exercice 4 : déploiement simulé d'une version non stable à chaque push sur develop
+deploy-develop:
+  stage: deploy
+  rules:
+    - if: $CI_COMMIT_BRANCH == "develop"
+  script:
+    - hatch build
+    - echo "my-arithmetic-nylphen deployment on develop servers"
+    - ls -l dist/
