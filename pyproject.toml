@@ -27,7 +27,7 @@ classifiers = [
 dependencies = []
 
 [project.urls]
-Documentation = "https://github.com/NylphenGoat/my-arithmetic-nylphen#readme"
+Documentation = "https://my-arithmetic-nylphen.readthedocs.io/"
 Issues = "https://github.com/NylphenGoat/my-arithmetic-nylphen/issues"
 Source = "https://github.com/NylphenGoat/my-arithmetic-nylphen"
 
@@ -43,6 +43,16 @@ fallback_version = "0.0"
 # Fichier de version généré à la construction (non versionné)
 [tool.hatch.build.hooks.vcs]
 version-file = "src/my_arithmetic_nylphen/__about__.py"
+
+# Exercice 6 : documentation Sphinx (hatch run docs:build)
+[tool.hatch.envs.docs]
+dependencies = [
+  "sphinx>=7",
+  "sphinx-rtd-theme>=2",
+]
+[tool.hatch.envs.docs.scripts]
+build = "sphinx-build -W -b html docs docs/_build/html"
+doctest = "sphinx-build -W -b doctest docs docs/_build/doctest"
 
 [tool.hatch.envs.types]
 extra-dependencies = [

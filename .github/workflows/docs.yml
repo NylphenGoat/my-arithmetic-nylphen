@@ -1,0 +1,45 @@
+# Exercice 6 : construction de la documentation Sphinx et déploiement sur Read the Docs
+name: docs
+
+on:
+  push:
+    branches: [main, develop]
+    tags: ["*"]
+  pull_request:
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install hatch
+      # Vérifie que la doc se construit sans avertissement et que les exemples sont justes
+      - run: hatch run docs:build
+      - run: hatch run docs:doctest
+      - uses: actions/upload-artifact@v4
+        with:
+          name: documentation-html
+          path: docs/_build/html
+
+  deploy:
+    needs: docs
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      # Déclenche la construction sur Read the Docs (version Community) via son API.
+      # Secrets à définir dans Settings > Secrets and variables > Actions :
+      #   RTD_TOKEN : jeton API (readthedocs.org > Settings > API Tokens)
+      - name: Déploiement sur Read the Docs
+        env:
+          RTD_TOKEN: ${{ secrets.RTD_TOKEN }}
+          RTD_PROJECT: my-arithmetic-nylphen
+          RTD_VERSION: ${{ github.ref_type == 'tag' && github.ref_name || (github.ref_name == 'main' && 'latest' || github.ref_name) }}
+        run: |
+          curl --fail-with-body -X POST \
+            -H "Authorization: Token $RTD_TOKEN" \
+            "https://readthedocs.org/api/v3/projects/$RTD_PROJECT/versions/$RTD_VERSION/builds/"

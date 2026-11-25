@@ -1,4 +1,5 @@
-# Exercice 5 : tests unitaires + couverture à chaque modification de code
+# Exercices 5 et 6 : tests unitaires + couverture à chaque modification de code,
+# envoi de la couverture sur coveralls.io
 name: tests
 
 on:
@@ -17,5 +18,13 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: pip install hatch
+      - run: pip install hatch coverage
       - run: hatch test --cover
+      # Rapport au format lcov, lu par Coveralls
+      - run: coverage lcov -o coverage.lcov
+      - name: Publication de la couverture sur Coveralls
+        uses: coverallsapp/github-action@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          file: coverage.lcov
+          format: lcov

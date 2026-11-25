@@ -11,3 +11,4 @@ build/
 coverage.xml
 .cache/
 src/my_arithmetic_nylphen/__about__.py
+docs/_build/
